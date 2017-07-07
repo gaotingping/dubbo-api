@@ -127,6 +127,7 @@ public class MyListener implements ServletContextListener {
 			reference.setApplication(application);
 			reference.setRegistry(registry); /*多个注册中心可以用setRegistries(),其内部也是这样转换的*/
 			reference.setInterface(c);
+			reference.setCheck(false);/*#bug fix 不检测服务提供者，防止个别服务错误导致api启动不了*/
 			
 			//reference.setVersion("1.0.0");//超时 版本  重试次数
 			//reference.setTimeout(6000);

@@ -1,9 +1,9 @@
 var zNodes = [ {
-	name : "服务模块1",
+	name : "服务模块1", //app
 	open : true,
-	children : [ {
+	children : [ {  //service
 		name : "接口名称1(类似于mvc的controller)",
-		children : [ {
+		children : [ { //method
 			name : "方法1"
 		}, {
 			name : "方法2"

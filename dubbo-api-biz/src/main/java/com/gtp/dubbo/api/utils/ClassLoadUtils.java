@@ -13,7 +13,7 @@ import com.gtp.dubbo.api.metadata.ApiApplicationInfo;
  */
 public class ClassLoadUtils {
 
-	private static ClassLoader loader;
+	private static ClassLoader loader=ClassLoadUtils.class.getClassLoader();
 
 	private final static String CONF_FILE = "META-INF/api.txt";
 
@@ -21,10 +21,6 @@ public class ClassLoadUtils {
 
 		ApiApplicationInfo application = new ApiApplicationInfo();
 
-		//File file = new File(path);
-		//URL url = file.toURI().toURL();
-		//loader = new URLClassLoader(new URL[] { url });
-		loader=ClassLoadUtils.class.getClassLoader();
 		JarFile jf = new JarFile(path);
 
 		// 配置
@@ -38,14 +34,17 @@ public class ClassLoadUtils {
 		Enumeration<JarEntry> it = jf.entries();
 		while (it.hasMoreElements()) {
 			JarEntry tmp = it.nextElement();
+			//仅处理类
 			if (!tmp.isDirectory() && tmp.getName().endsWith(".class")) {
+				
 				String clazzName = tmp.getName();
 				int endIndex = clazzName.lastIndexOf(".");
 				clazzName = clazzName.substring(0, endIndex);
 				clazzName = clazzName.replace("/", ".");
 				Class<?> c = loader.loadClass(clazzName);
+				
+				//仅处理注解接口
 				ApiService apiService = c.getAnnotation(ApiService.class);
-				System.out.println(c+">"+apiService);
 				if(apiService!=null){
 					application.addService(c);
 				}
