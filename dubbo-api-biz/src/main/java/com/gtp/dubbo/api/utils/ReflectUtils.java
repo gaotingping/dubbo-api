@@ -27,7 +27,7 @@ public class ReflectUtils {
 		if (isBaseType(c)) {
 			ApiDescribe desc = c.getAnnotation(ApiDescribe.class);
 			JSONObject tmp1 = new JSONObject();
-			tmp1.put("type", c.getName());
+			tmp1.put("type", c.getSimpleName());
 			tmp1.put("fields", null);
 			if (desc != null) {
 				tmp1.put("desc", desc.value());
@@ -48,7 +48,7 @@ public class ReflectUtils {
 					if (isBaseType(f.getType())) { /* 基本类型 */
 						result.put(f.getName(), desc.value());
 						JSONObject tmp2 = new JSONObject();
-						tmp2.put("type", f.getType());
+						tmp2.put("type", f.getType().getSimpleName());
 						tmp2.put("fields", null);
 						tmp2.put("desc", desc.value());
 						result.put(f.getName(), tmp2);
@@ -59,7 +59,7 @@ public class ReflectUtils {
 							Class<?> tmpC = (Class<?>) actualTypes[0];
 							if (circuleRef.containsKey(tmpC.getName())) { /* 循环引用 */
 								JSONObject tmp3 = new JSONObject();
-								tmp3.put("type", f.getType());
+								tmp3.put("type", f.getType().getSimpleName());
 								tmp3.put("fields", "$ref_" + tmpC.getName());
 								tmp3.put("desc", desc.value());
 								result.put(f.getName(), tmp3);
@@ -67,7 +67,7 @@ public class ReflectUtils {
 								JSONArray data = new JSONArray();
 								data.add(innerAllFields(tmpC, circuleRef));
 								JSONObject tmp4 = new JSONObject();
-								tmp4.put("type", f.getType());
+								tmp4.put("type", f.getType().getSimpleName());
 								tmp4.put("fields", data);
 								tmp4.put("desc", desc.value());
 								result.put(f.getName(), tmp4);
@@ -77,13 +77,13 @@ public class ReflectUtils {
 					} else { /* 自定义bean */
 						if (circuleRef.containsKey(f.getType().getName())) { /* 循环引用 */
 							JSONObject tmp5 = new JSONObject();
-							tmp5.put("type", f.getType());
+							tmp5.put("type", f.getType().getSimpleName());
 							tmp5.put("fields", "$ref_" + f.getType().getName());
 							tmp5.put("desc", desc.value());
 							result.put(f.getName(), tmp5);
 						} else {
 							JSONObject tmp6 = new JSONObject();
-							tmp6.put("type", f.getType());
+							tmp6.put("type", f.getType().getSimpleName());
 							tmp6.put("fields", innerAllFields(f.getType(), circuleRef));
 							tmp6.put("desc", desc.value());
 							result.put(f.getName(), tmp6);
@@ -110,7 +110,7 @@ public class ReflectUtils {
 				}
 				if (isBaseType(f.getType())) { /* 基本类型 */
 					JSONObject tmp1 = new JSONObject();
-					tmp1.put("type", f.getType());
+					tmp1.put("type", f.getType().getSimpleName());
 					tmp1.put("fields", null);
 					tmp1.put("desc", desc.value());
 					result.put(f.getName(), tmp1);
@@ -122,7 +122,7 @@ public class ReflectUtils {
 						JSONArray data = new JSONArray();
 						data.add(innerAllFields(tmpC, circuleRef));
 						JSONObject tmp2 = new JSONObject();
-						tmp2.put("type", f.getType());
+						tmp2.put("type", f.getType().getSimpleName());
 						tmp2.put("fields", data);
 						tmp2.put("desc", desc.value());
 						result.put(f.getName(), tmp2);
@@ -131,13 +131,13 @@ public class ReflectUtils {
 				} else { /* 自定义bean */
 					if (circuleRef.containsKey(f.getType().getName())) { /* 循环引用 */
 						JSONObject tmp3 = new JSONObject();
-						tmp3.put("type", f.getType());
+						tmp3.put("type", f.getType().getSimpleName());
 						tmp3.put("fields", "$ref_" + f.getType().getName());
 						tmp3.put("desc", desc.value());
 						result.put(f.getName(), tmp3);
 					} else {
 						JSONObject tmp4 = new JSONObject();
-						tmp4.put("type", f.getType());
+						tmp4.put("type", f.getType().getSimpleName());
 						tmp4.put("fields", innerAllFields(f.getType(), circuleRef));
 						tmp4.put("desc", desc.value());
 						result.put(f.getName(), tmp4);
