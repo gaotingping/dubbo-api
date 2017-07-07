@@ -23,9 +23,12 @@ public class DispatcherController {
 	@Autowired
 	private ServiceDispatcher dispatcher;/* 服务转发器 */
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/services")
+	@RequestMapping(method = RequestMethod.POST, value = "/services",produces = "text/html; charset=utf-8")
 	@ResponseBody
 	public String doService(@RequestBody String body,HttpServletRequest request,HttpServletResponse response) {
+		
+		// 允许跨域
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		
 		try {
 			// step1:参数解析
