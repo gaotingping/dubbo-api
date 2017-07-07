@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
@@ -107,12 +105,10 @@ public class AutoBuildDoc {
 						Cell c5 = new Cell(new Phrase("输出", font10));
 						table.addCell(c5);
 						
-						Class<?> r = tm.getReturnType();
-						if(r == List.class){ //List
+						ApiParamInfo returnParams = ReflectUtils.getReturnInfo(tm);
+						if(returnParams.getIsList()){
 							
-							Class<?> tmpC = getClassByType(tm.getGenericReturnType());
-							
-							JSONObject returnJson = ReflectUtils.allFields(tmpC);
+							JSONObject returnJson = ReflectUtils.allFields(returnParams.getType());
 							JSONArray returnData=new JSONArray();
 							returnData.add(returnJson);
 							String returnStr = JsonFormatUtils.formatJson(returnData.toJSONString());
@@ -120,12 +116,12 @@ public class AutoBuildDoc {
 							table.addCell(c6);
 							
 						}else{
-							JSONObject returnJson = ReflectUtils.allFields(r);
+							JSONObject returnJson = ReflectUtils.allFields(returnParams.getType());
 							String returnStr = JsonFormatUtils.formatJson(returnJson.toJSONString());
 							Cell c6 = new Cell(new Phrase(returnStr, font10));
 							table.addCell(c6);
 						}
-
+						
 						doc.add(table);
 					}
 				}
@@ -133,17 +129,6 @@ public class AutoBuildDoc {
 		}
 
 		doc.close();
-	}
-
-	private static Class<?> getClassByType(Type t) {
-		
-		if(t instanceof ParameterizedType){
-			Type[] actualTypes = ((ParameterizedType) t).getActualTypeArguments();
-			Class<?> tmpC = (Class<?>) actualTypes[0];
-			return tmpC;
-		}
-		
-		return null;
 	}
 
 	private static void writerGlobalRule(Document doc) throws DocumentException {

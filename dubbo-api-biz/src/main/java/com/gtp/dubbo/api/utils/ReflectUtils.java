@@ -42,7 +42,7 @@ public class ReflectUtils {
 					HashMap<String, String> circuleRef = new HashMap<String, String>();
 					circuleRef.put(c.getName(), null);
 					ApiDescribe desc = f.getAnnotation(ApiDescribe.class);
-					if (desc == null) {/*忽略未注解字段*/
+					if (desc == null) {/* 忽略未注解字段 */
 						continue;
 					}
 					if (isBaseType(f.getType())) { /* 基本类型 */
@@ -105,7 +105,7 @@ public class ReflectUtils {
 			Field[] fs = c.getDeclaredFields();
 			for (Field f : fs) {
 				ApiDescribe desc = f.getAnnotation(ApiDescribe.class);
-				if (desc == null) {/*忽略未注解字段*/
+				if (desc == null) {/* 忽略未注解字段 */
 					continue;
 				}
 				if (isBaseType(f.getType())) { /* 基本类型 */
@@ -166,67 +166,89 @@ public class ReflectUtils {
 			return true;
 		} else if (c == Boolean.class) {
 			return true;
-		}else if (c == Short.class) {
+		} else if (c == Short.class) {
 			return true;
-		}else if (c == Byte.class) {
+		} else if (c == Byte.class) {
 			return true;
-		}else if (c == Character.class) {
+		} else if (c == Character.class) {
 			return true;
 		}
 		return false;
 	}
-
-public static List<ApiParamInfo> getParameterInfo(Method m) {
+	
+	//获得返回值信息
+	public static ApiParamInfo getReturnInfo(Method m){
 		
-		Class<?>[] p1 = m.getParameterTypes();
-		if(p1==null || p1.length<1){
-			return null;
+		ApiParamInfo tmp = new ApiParamInfo();
+		
+		Class<?> r = m.getReturnType();
+		if(r == List.class){
+			tmp.setIsList(true);
+			Class<?> tmpC = getClassByType(m.getGenericReturnType());
+			tmp.setType(tmpC);
+		}else{
+			tmp.setIsList(false);
+			tmp.setType(r);
 		}
 		
+		return tmp;
+	}
+
+	//获得参数信息
+	public static List<ApiParamInfo> getParameterInfo(Method m) {
+
+		Class<?>[] p1 = m.getParameterTypes();
+		if (p1 == null || p1.length < 1) {
+			return null;
+		}
+
 		Type[] p11 = m.getGenericParameterTypes();
-		
-		//bug fix:有参数但是没有注解,可能是跳过自动注解的
+
 		Annotation[][] p2 = m.getParameterAnnotations();
-//		if(p2== null || p2.length<1){
-//			return null;
-//		}
 		
-		List<ApiParamInfo> list=new ArrayList<>();
-		
-		for(int i=0;i<p1.length;i++){
-			
-			ApiParamInfo tmp=new ApiParamInfo();
-			
+		/**
+		 * bug fix:有参数但是没有注解,可能是跳过自动注解的
+		 */
+		// if(p2== null || p2.length<1){
+		// return null;
+		// }
+
+		List<ApiParamInfo> list = new ArrayList<>();
+
+		for (int i = 0; i < p1.length; i++) {
+
+			ApiParamInfo tmp = new ApiParamInfo();
+
 			Class<?> c = p1[i];
-			if(p1[i] == List.class){
-				c=getClassByType(p11[i]);
+			if (p1[i] == List.class) {
+				c = getClassByType(p11[i]);
 				tmp.setIsList(true);
 			}
-			
-			ApiParam apiParam=null;
-			for(Annotation a:p2[i]){
-				if(a instanceof ApiParam){
-					apiParam=(ApiParam)a;
+
+			ApiParam apiParam = null;
+			for (Annotation a : p2[i]) {
+				if (a instanceof ApiParam) {
+					apiParam = (ApiParam) a;
 					break;
 				}
 			}
 			tmp.setType(c);
 			tmp.setApiParam(apiParam);
-			
+
 			list.add(tmp);
 		}
-		
+
 		return list;
 	}
 
 	private static Class<?> getClassByType(Type t) {
-		
-		if(t instanceof ParameterizedType){
+
+		if (t instanceof ParameterizedType) {
 			Type[] actualTypes = ((ParameterizedType) t).getActualTypeArguments();
 			Class<?> tmpC = (Class<?>) actualTypes[0];
 			return tmpC;
 		}
-		
+
 		return null;
 	}
 }
