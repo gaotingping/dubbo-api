@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>api</title>
+<link type="text/css" href="css/api.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="_head">
+		API 文档 <span><a href="html/api.html" target="_back">api.html</a></span>
+	</div>
+	<div class="_content">
+		<!-- api 约定 -->
+		<div id="api_readme">
+			<div class="api_req_h1">
+				<h1>请求约定</h1>
+			</div>
+			<div class="api_req_txt">
+				<pre>{
+	"application": "application",
+	"group": "group",
+	"code": "code",
+	"args": {
+	    ...//请求正文
+	},
+	"channel": "ios/pc/android",
+	"domain":"domain",
+	"token": "xxxx"
+}</pre>
+			</div>
+			<div class="api_req_note">
+				<table>
+					<tr>
+						<th>字段</th>
+						<th>类型</th>
+						<th>说明</th>
+					</tr>
+					<tr>
+						<td>application</td>
+						<td>string</td>
+						<td>服务标识,一个服务一个,要求全局唯一,最好和dubbo:application name="carpool"一致</td>
+					</tr>
+					<tr>
+						<td>group</td>
+						<td>string</td>
+						<td>服务分组,在service内得唯一,等价于interface</td>
+					</tr>
+					<tr>
+						<td>code</td>
+						<td>string</td>
+						<td>方法标识,在group下得唯一,等价于method</td>
+					</tr>
+					<tr>
+						<td>args</td>
+						<td>json</td>
+						<td>请求参数json</td>
+					</tr>
+					<tr>
+						<td>channel</td>
+						<td>string</td>
+						<td>渠道:ios/pc/android</td>
+					</tr>
+					<tr>
+						<td>domain</td>
+						<td>string</td>
+						<td>数据域，同一个服务可能对多个产品提供支持，用域划分数据空间</td>
+					</tr>
+					<tr>
+						<td>token</td>
+						<td>string</td>
+						<td>登录凭证</td>
+					</tr>
+				</table>
+			</div>
+			<div class="api_resp_h1">
+				<h1>响应约定</h1>
+			</div>
+			<div class="api_resp_txt">
+				<pre>{
+    "flag": true/false, 
+    "error": "error",
+    "result": "result",
+    "stime:"stime"
+}</pre>
+			</div>
+			<div class="api_resp_note">
+				<table>
+					<tr>
+						<th>字段</th>
+						<th>类型</th>
+						<th>说明</th>
+					</tr>
+					<tr>
+						<td>flag</td>
+						<td>boolean</td>
+						<td>api网关处理状态,true成功，false失败</td>
+					</tr>
+					<tr>
+						<td>error</td>
+						<td>string</td>
+						<td>错误码,失败时的错误码，仅flag=false有内容</td>
+					</tr>
+					<tr>
+						<td>result</td>
+						<td>json string</td>
+						<td>业务数据，json字符串，具体内容见各服务说明</td>
+					</tr>
+					<tr>
+						<td>stime</td>
+						<td>long</td>
+						<td>api网关当前时间</td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- 网关错误码 -->
+			<div class="api_resp_h1">
+				<h1>API网关错误码</h1>
+			</div>
+			<div class="api_resp_note">
+				<table>
+					<tr>
+						<th>字段</th>
+						<th>说明</th>
+					</tr>
+					<tr>
+						<td>100</td>
+						<td>未知错误</td>
+					</tr>
+					<tr>
+						<td>101</td>
+						<td>应用名错误</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
