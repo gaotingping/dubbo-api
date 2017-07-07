@@ -14,40 +14,6 @@
 <script src="../jsonFormat/js/jsonFormater.js" type="text/javascript"></script>
 <script type="text/javascript" src="../js/api.js" charset="UTF-8"></script>
 <script type="text/javascript" src="../js/js-format.js" charset="UTF-8"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		
-		$.fn.zTree.init($("#apiTreeId"), setting, zNodes);
-		var treeObj = $.fn.zTree.getZTreeObj("apiTreeId");
-		treeObj.expandAll(true);
-		
-		//服务模块 
-		$("#m_path").html('<pre>'+api_format('{"application": "application","group": "group","code": "code"}')+'</pre>');
-		
-		//格式化-请求
-		var options = {
-			dom : '#m_req'
-		};
-		var jf = new JsonFormater(options);
-		jf.doFormat(JSON.stringify(api_m));
-		
-		//格式化-响应
-		var options2 = {
-				dom : '#m_resp'
-		};
-		var jf2 = new JsonFormater(options2);
-		jf2.doFormat(JSON.stringify(api_m));
-		
-	});
-	
-	function toCopy(type){
-		if(type == 1){/*复制req*/
-			alert(api_initTest(api_m));
-		}else{
-			alert(api_initTest(api_m));
-		}
-	}
-</script>
 </head>
 <body>
 	<div id="api_m">
@@ -64,9 +30,9 @@
 				<div class="_m" id="api_method">
 					<div class="_m_desc">查询用户信息</div>
 					<div class="_m_path" id="m_path"></div>
-					<div class="_m_req">request:<span onclick="toCopy('1')">复制</span></div>
+					<div class="_m_req">request:</div>
 					<div class="_m_content" id="m_req"></div>
-					<div class="_m_resp">response:<span onclick="toCopy('2')">复制</span></div>
+					<div class="_m_resp">response:</div>
 					<div class="_m_content" id="m_resp"></div>
 				</div>
 			</div>
