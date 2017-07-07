@@ -1,0 +1,23 @@
+<configuration debug="false">
+	
+	<property name="BASE_LOH_PATH" value="/home/admin/logs/carpool" />   
+	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+    <contextName>${APP_Name}</contextName>
+      
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+		</filter>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern><![CDATA[%date %level [%thread] %logger{10} [%file:%line] %msg%n]]></pattern>
+		</layout>
+	</appender>
+
+	<logger name="com.alibaba.dubbo" level="ERROR" addtivity="false"/>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
