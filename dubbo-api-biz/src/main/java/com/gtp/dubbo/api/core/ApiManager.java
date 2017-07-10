@@ -55,7 +55,7 @@ public class ApiManager {
 	}
 
 	/**
-	 * 在指定服务下注册一个方法
+	 * 在指定应用下，注册服务
 	 * 
 	 * @param serviceModule
 	 * @param p

@@ -13,15 +13,17 @@ import com.gtp.dubbo.api.annotation.ApiDescribe;
 @ApiDescribe("方法封装")
 public class ApiMethodInfo {
 
+	private Method method;/*方法*/
+	
+	private String methodDesc;/*方法描述*/
+	
 	private String methodCode;/*方法编码,唯一标识*/
 	
 	private Object instance;/*实例*/
 	
-	private Method method;/*方法*/
+	private  List<ApiParamInfo> inParams;/*参数列表与类型*/
 	
-	private  List<ApiParamInfo> paramNames;/*参数列表与类型*/
-	
-	private String methodDesc;/*方法描述*/
+	private ApiParamInfo outParams;/*返回值*/
 	
 	public String getMethodCode() {
 		return methodCode;
@@ -47,19 +49,27 @@ public class ApiMethodInfo {
 		this.method = method;
 	}
 
-	public List<ApiParamInfo> getParamNames() {
-		return paramNames;
-	}
-
-	public void setParamNames(List<ApiParamInfo> paramNames) {
-		this.paramNames = paramNames;
-	}
-
 	public String getMethodDesc() {
 		return methodDesc;
 	}
 
 	public void setMethodDesc(String methodDesc) {
 		this.methodDesc = methodDesc;
+	}
+
+	public List<ApiParamInfo> getInParams() {
+		return inParams;
+	}
+
+	public void setInParams(List<ApiParamInfo> inParams) {
+		this.inParams = inParams;
+	}
+
+	public ApiParamInfo getOutParams() {
+		return outParams;
+	}
+
+	public void setOutParams(ApiParamInfo outParams) {
+		this.outParams = outParams;
 	}
 }

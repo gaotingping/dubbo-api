@@ -149,7 +149,8 @@ public class MyListener implements ServletContextListener {
 					m.setMethod(method);
 					m.setMethodCode(serviceCode.value());
 					m.setMethodDesc(serviceCode.desc());
-					m.setParamNames(parameterBinder.getParamNames(method));
+					m.setInParams(parameterBinder.getInParams(method));
+					m.setOutParams(parameterBinder.getOutParams(method));
 					methods.put(serviceCode.value(), m);
 				}
 			}

@@ -17,8 +17,12 @@ import com.gtp.dubbo.api.utils.ReflectUtils;
  */
 public class DefaultParameterBinder implements ParameterBinder {
 
-	public List<ApiParamInfo> getParamNames(Method method) {
+	public List<ApiParamInfo> getInParams(Method method){
 		return ReflectUtils.getParameterInfo(method);
+	}
+	
+	public ApiParamInfo getOutParams(Method method){
+		return ReflectUtils.getReturnInfo(method);
 	}
 
 	public Object[] getParamValues(Method method,List<ApiParamInfo> paramNames,

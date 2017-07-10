@@ -55,7 +55,7 @@ public class DefaultServiceDispatcher implements ServiceDispatcher {
 			}
 
 			// 方法参数为空
-			List<ApiParamInfo> pts = m.getParamNames();
+			List<ApiParamInfo> pts = m.getInParams();
 			if (pts == null || pts.isEmpty()) {
 				return doExecute(m.getMethod(), m.getInstance(), null);
 			}

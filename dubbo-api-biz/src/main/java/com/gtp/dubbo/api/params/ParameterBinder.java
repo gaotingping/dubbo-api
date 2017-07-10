@@ -17,8 +17,15 @@ public interface ParameterBinder {
 	/**
 	 * 获得参数上的所有注解
 	 */
-	public List<ApiParamInfo> getParamNames(Method method);
-
+	public List<ApiParamInfo> getInParams(Method method);
+	
+	/**
+	 * 获得返回值
+	 * 
+	 * @param method
+	 * @return
+	 */
+	public ApiParamInfo getOutParams(Method method);
 
 	/**
 	 * 根据参数名称获得参数对应的输入值
