@@ -63,4 +63,9 @@ public class ApiManager {
 	public static void register(String app, Map<String, Map<String, ApiMethodInfo>> p) {
 		pool.put(app, p);
 	}
+
+	public static Map<String, Map<String, Map<String, ApiMethodInfo>>> getPool() {
+		return pool;
+	}
+	
 }

@@ -72,4 +72,10 @@ public class ApiMethodInfo {
 	public void setOutParams(ApiParamInfo outParams) {
 		this.outParams = outParams;
 	}
+
+	@Override
+	public String toString() {
+		return "[method=" + method + ", methodDesc=" + methodDesc + ", methodCode=" + methodCode
+				+ ", inParams=" + inParams + ", outParams=" + outParams + "]";
+	}
 }

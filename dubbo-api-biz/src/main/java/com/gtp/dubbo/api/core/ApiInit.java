@@ -21,6 +21,7 @@ import com.gtp.dubbo.api.metadata.ApiApplicationInfo;
 import com.gtp.dubbo.api.metadata.ApiMethodInfo;
 import com.gtp.dubbo.api.params.ParameterBinder;
 import com.gtp.dubbo.api.utils.ClassLoadUtils;
+import com.gtp.dubbo.api.utils.Md5Utils;
 
 /**
  * 读取配置文件获得jar 解析jar
@@ -31,19 +32,21 @@ import com.gtp.dubbo.api.utils.ClassLoadUtils;
 public class ApiInit {
 
 	private static final Logger logger = LoggerFactory.getLogger(MyListener.class);
-
-	public static List<String> getJarPaths() {
-		return null;
-	}
+	
+	private static final Map<String,String> jarCache=new HashMap<>();
 
 	public static void parseJar(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+		
 		String jarPath = appConfig.getJarPath();
+		
+		//file is exits
 		File dir = new File(jarPath);
 		if (!dir.exists()) {
 			logger.error("Jar path is not exits:" + jarPath);
 			return;
 		}
 
+		//只取jar
 		String[] list = dir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
@@ -104,8 +107,7 @@ public class ApiInit {
 
 			ReferenceConfig reference = new ReferenceConfig();
 			reference.setApplication(application);
-			reference.setRegistry(
-					registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
+			reference.setRegistry(registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
 			reference.setInterface(c);
 			reference.setCheck(false);/* #bug fix 不检测服务提供者，防止个别服务错误导致api启动不了 */
 
@@ -121,12 +123,11 @@ public class ApiInit {
 
 			Map<String, ApiMethodInfo> methods = new HashMap<>();
 
-			for (Method method : c
-					.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
+			for (Method method : c.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
 				ApiMethod serviceCode = method.getAnnotation(ApiMethod.class);
 				if (serviceCode != null) {
 					ApiMethodInfo m = new ApiMethodInfo();
-					m.setInstance(instance);
+					m.setInstance(instance); //全局缓存
 					m.setMethod(method);
 					m.setMethodCode(serviceCode.value());
 					m.setMethodDesc(serviceCode.desc());
@@ -142,5 +143,61 @@ public class ApiInit {
 		ApiManager.register(app.getName(), services);
 
 		logger.info("===结束注册dubbo服务===");
+	}
+
+	/**
+	 * 刷新jar工作区，以文件的md5值为区分是否更新
+	 * 
+	 * @param parameterBinder
+	 * @param appConfig
+	 * @throws Exception
+	 */
+	public static void refresh(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+		
+		String jarPath = appConfig.getJarPath();
+		
+		//file is exits
+		File dir = new File(jarPath);
+		if (!dir.exists()) {
+			logger.error("Jar path is not exits:" + jarPath);
+			return;
+		}
+
+		//只取jar
+		String[] list = dir.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".jar");
+			}
+		});
+		
+		if (list == null || list.length < 1) {
+			logger.error("Jar path is empty:" + jarPath);
+			return;
+		}
+		
+		for(String path:list){
+			
+			String v2 = Md5Utils.md5File(jarPath+path);
+			if(v2==null){
+				logger.info("负略path(文件为空或未改变):"+path);
+				continue;
+			}
+			
+			if(jarCache.containsKey(path)){
+				String v1 = jarCache.get(path);
+				if(v1!=null && !v1.equals(v2)){
+					parseJar(parameterBinder, jarPath+path);
+				}else{
+					logger.info("负略path(文件为空或未改变):"+path);
+				}
+			}else{
+				jarCache.put(path, v2);
+				parseJar(parameterBinder, jarPath+path);
+			}
+					
+			
+			
+		}
 	}
 }

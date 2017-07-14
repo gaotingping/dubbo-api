@@ -16,7 +16,22 @@ public class IServerImpl implements IService{
 		
 		vo.id=123;
 		vo.pid=456;
-		vo.name="name";
+		vo.name="name1";
+		
+		return vo;
+	}
+	
+	@Override
+	public UserInfoVO test2(String id, UserDTO userDTO) {
+		
+		System.out.println("id=2="+id);
+		System.out.println("dto=2="+userDTO);
+		
+		UserInfoVO vo=new UserInfoVO();
+		
+		vo.id=123;
+		vo.pid=456;
+		vo.name="name2";
 		
 		return vo;
 	}

@@ -17,6 +17,13 @@ public class ClassLoadUtils {
 
 	private final static String CONF_FILE = "META-INF/api.txt";
 
+	/**
+	 * 加载指定jar的所有符合规则的文件
+	 * 
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
 	public static ApiApplicationInfo load(String path) throws Exception {
 
 		ApiApplicationInfo application = new ApiApplicationInfo();

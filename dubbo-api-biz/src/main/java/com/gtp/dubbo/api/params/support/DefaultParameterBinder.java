@@ -3,6 +3,8 @@ package com.gtp.dubbo.api.params.support;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gtp.dubbo.api.metadata.ApiParamInfo;
@@ -15,6 +17,7 @@ import com.gtp.dubbo.api.utils.ReflectUtils;
  * @author gaotingping@cyberzone.cn
  *
  */
+@Service
 public class DefaultParameterBinder implements ParameterBinder {
 
 	public List<ApiParamInfo> getInParams(Method method){

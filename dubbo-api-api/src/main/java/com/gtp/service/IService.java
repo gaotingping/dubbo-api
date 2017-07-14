@@ -12,4 +12,8 @@ public interface IService {
 	@ApiMethod(value="001",desc="测试方法")
 	public UserInfoVO test1(@ApiParam(value="id",desc="基本类型") String id,
 							@ApiParam(value="b",desc="自定义bean") UserDTO userDTO);
+	
+	@ApiMethod(value="002",desc="测试方法")
+	public UserInfoVO test2(@ApiParam(value="id",desc="基本类型") String id,
+							@ApiParam(value="b",desc="自定义bean") UserDTO userDTO);
 }

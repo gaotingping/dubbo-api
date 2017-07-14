@@ -2,6 +2,7 @@ package com.gtp.dubbo.api.metadata;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSON;
 import com.gtp.dubbo.api.annotation.ApiParam;
 
 //参数封装
@@ -37,5 +38,10 @@ public class ApiParamInfo implements Serializable{
 
 	public void setApiParam(ApiParam apiParam) {
 		this.apiParam = apiParam;
+	}
+
+	@Override
+	public String toString() {
+		return "[isList=" + isList + ", type=" + type + ", apiParam=" + JSON.toJSONString(apiParam) + "]";
 	}
 }

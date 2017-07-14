@@ -9,16 +9,17 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import com.alibaba.fastjson.JSON;
 import com.gtp.dubbo.api.common.AppConfig;
 import com.gtp.dubbo.api.core.ApiInit;
+import com.gtp.dubbo.api.core.ApiManager;
 import com.gtp.dubbo.api.params.ParameterBinder;
 import com.gtp.dubbo.api.params.support.DefaultParameterBinder;
 
 /**
- * 通过监听器来初始化服务不是个好的选择，因为servlet已启动好 可能请求就进来了，但是容器还在初始化
+ * 负责日期得初始化
  * 
  * @author gaotingping@cyberzone.cn
- *
  */
 public class MyListener implements ApplicationListener<ApplicationContextEvent>, ApplicationContextAware {
 
@@ -53,6 +54,9 @@ public class MyListener implements ApplicationListener<ApplicationContextEvent>,
 
 				// 初始化远程服务
 				ApiInit.parseJar(parameterBinder,appConfig);
+				
+				//数据
+				System.out.println(JSON.toJSONString(ApiManager.getPool()));
 
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
