@@ -1,11 +1,11 @@
 package com.gtp.service.impl;
 
 import com.gtp.dto.UserDTO;
-import com.gtp.service.IService;
+import com.gtp.service.IService2;
 import com.gtp.vo.AddressVO;
 import com.gtp.vo.UserInfoVO;
 
-public class IServerImpl implements IService{
+public class IServerImpl2 implements IService2{
 
 	@Override
 	public UserInfoVO test1(String id, UserDTO userDTO) {
@@ -36,7 +36,7 @@ public class IServerImpl implements IService{
 		
 		return vo;
 	}
-
+	
 	@Override
 	public AddressVO test3(String id) {
 		System.out.println("id=3="+id);

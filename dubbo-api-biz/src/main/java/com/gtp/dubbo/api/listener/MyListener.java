@@ -53,7 +53,7 @@ public class MyListener implements ApplicationListener<ApplicationContextEvent>,
 				AppConfig appConfig = context.getBean(AppConfig.class);
 
 				// 初始化远程服务
-				ApiInit.parseJar(parameterBinder,appConfig);
+				ApiInit.initAll(parameterBinder,appConfig);
 				
 				//数据
 				System.out.println(JSON.toJSONString(ApiManager.getPool()));

@@ -155,7 +155,7 @@ public class ApiDocController {
 				parameterBinder = new DefaultParameterBinder();
 			}
 			//刷新
-			ApiInit.refresh(parameterBinder, appConfig);
+			ApiInit.refreshAll(parameterBinder, appConfig);
 			
 			//刷出
 			System.out.println(ApiManager.getPool());

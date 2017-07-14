@@ -32,40 +32,56 @@ import com.gtp.dubbo.api.utils.Md5Utils;
 public class ApiInit {
 
 	private static final Logger logger = LoggerFactory.getLogger(MyListener.class);
-	
-	private static final Map<String,String> jarCache=new HashMap<>();
 
-	public static void parseJar(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
-		
+	private static final Map<String, String> jarCache = new HashMap<>();
+
+	/**
+	 * 重启的时候，全部重新加载
+	 * 
+	 * @param parameterBinder
+	 * @param appConfig
+	 * @throws Exception
+	 */
+	public static void initAll(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+
 		String jarPath = appConfig.getJarPath();
-		
-		//file is exits
+
+		// file is exits
 		File dir = new File(jarPath);
 		if (!dir.exists()) {
 			logger.error("Jar path is not exits:" + jarPath);
 			return;
 		}
 
-		//只取jar
+		// 只取jar
 		String[] list = dir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar");
 			}
 		});
-		
+
 		if (list == null || list.length < 1) {
 			logger.error("Jar path is empty:" + jarPath);
 			return;
 		}
-		
-		for(String path:list){
-			parseJar(parameterBinder, jarPath+path);
+
+		for (String path : list) {
+			String v2 = Md5Utils.md5File(jarPath + path);
+			jarCache.put(jarPath + path, v2);
+			parseJar(parameterBinder, jarPath + path);
 		}
 
 	}
 
-	public static void parseJar(ParameterBinder parameterBinder, String jarPath) throws Exception {
+	/**
+	 * 加载单个jar
+	 * 
+	 * @param parameterBinder
+	 * @param jarPath
+	 * @throws Exception
+	 */
+	private static void parseJar(ParameterBinder parameterBinder, String jarPath) throws Exception {
 
 		/**
 		 * 服务注册规划： 1.直接去zk注册中心中找(省事情,但是实现复杂，并且还需要jar信息，可能需要改装dubbo)
@@ -75,7 +91,7 @@ public class ApiInit {
 		 * 4.负责人信息，以及更详细的dubbo属性等
 		 */
 		logger.info("===开始注册dubbo服务===");
-		logger.info("jarPath="+jarPath);
+		logger.info("jarPath=" + jarPath);
 
 		ApiApplicationInfo app = ClassLoadUtils.load(jarPath);
 
@@ -107,7 +123,8 @@ public class ApiInit {
 
 			ReferenceConfig reference = new ReferenceConfig();
 			reference.setApplication(application);
-			reference.setRegistry(registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
+			reference.setRegistry(
+					registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
 			reference.setInterface(c);
 			reference.setCheck(false);/* #bug fix 不检测服务提供者，防止个别服务错误导致api启动不了 */
 
@@ -123,11 +140,12 @@ public class ApiInit {
 
 			Map<String, ApiMethodInfo> methods = new HashMap<>();
 
-			for (Method method : c.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
+			for (Method method : c
+					.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
 				ApiMethod serviceCode = method.getAnnotation(ApiMethod.class);
 				if (serviceCode != null) {
 					ApiMethodInfo m = new ApiMethodInfo();
-					m.setInstance(instance); //全局缓存
+					m.setInstance(instance); // 全局缓存
 					m.setMethod(method);
 					m.setMethodCode(serviceCode.value());
 					m.setMethodDesc(serviceCode.desc());
@@ -146,58 +164,91 @@ public class ApiInit {
 	}
 
 	/**
-	 * 刷新jar工作区，以文件的md5值为区分是否更新
+	 * 刷新单个jar
 	 * 
 	 * @param parameterBinder
 	 * @param appConfig
 	 * @throws Exception
 	 */
-	public static void refresh(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
-		
-		String jarPath = appConfig.getJarPath();
-		
-		//file is exits
+	public static void refresh(ParameterBinder parameterBinder, String jarPath) throws Exception {
+
+		// file is exits
 		File dir = new File(jarPath);
 		if (!dir.exists()) {
 			logger.error("Jar path is not exits:" + jarPath);
 			return;
 		}
 
-		//只取jar
+		String v2 = Md5Utils.md5File(jarPath);
+		if (v2 == null) {
+			logger.info("负略path(文件为空或未改变):" + jarPath);
+			return;
+		}
+
+		if (jarCache.containsKey(jarPath)) {
+			String v1 = jarCache.get(jarPath);
+			if (v1 != null && !v1.equals(v2)) {
+				parseJar(parameterBinder, jarPath);
+			} else {
+				logger.info("负略path(文件为空或未改变):" + jarPath);
+			}
+		} else {
+			jarCache.put(jarPath, v2);
+			parseJar(parameterBinder, jarPath);
+		}
+	}
+
+	/**
+	 * 刷新jar工作区，以文件的md5值为区分是否更新
+	 * 
+	 * @param parameterBinder
+	 * @param appConfig
+	 * @throws Exception
+	 */
+	public static void refreshAll(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+
+		String jarPath = appConfig.getJarPath();
+
+		// file is exits
+		File dir = new File(jarPath);
+		if (!dir.exists()) {
+			logger.error("Jar path is not exits:" + jarPath);
+			return;
+		}
+
+		// 只取jar
 		String[] list = dir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar");
 			}
 		});
-		
+
 		if (list == null || list.length < 1) {
 			logger.error("Jar path is empty:" + jarPath);
 			return;
 		}
-		
-		for(String path:list){
-			
-			String v2 = Md5Utils.md5File(jarPath+path);
-			if(v2==null){
-				logger.info("负略path(文件为空或未改变):"+path);
+
+		for (String path : list) {
+
+			String v2 = Md5Utils.md5File(jarPath + path);
+			if (v2 == null) {
+				logger.info("忽略path(文件为空或未改变):" + path);
 				continue;
 			}
-			
-			if(jarCache.containsKey(path)){
-				String v1 = jarCache.get(path);
-				if(v1!=null && !v1.equals(v2)){
-					parseJar(parameterBinder, jarPath+path);
-				}else{
-					logger.info("负略path(文件为空或未改变):"+path);
+
+			if (jarCache.containsKey(jarPath + path)) {
+				String v1 = jarCache.get(jarPath + path);
+				if (v1 != null && !v1.equals(v2)) {
+					parseJar(parameterBinder, jarPath + path);
+				} else {
+					logger.info("忽略path(文件为空或未改变):" + path);
 				}
-			}else{
-				jarCache.put(path, v2);
-				parseJar(parameterBinder, jarPath+path);
+			} else {
+				jarCache.put(jarPath + path, v2);
+				parseJar(parameterBinder, jarPath + path);
 			}
-					
-			
-			
+
 		}
 	}
 }

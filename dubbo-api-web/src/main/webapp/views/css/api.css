@@ -45,6 +45,12 @@ div{
    margin: 0px auto;
 }
 
+._content3{
+   width: 80%;
+   height: 92%;
+   margin: 0px auto;
+}
+
 ._content2{
    display: flex;
    width: 100%;
