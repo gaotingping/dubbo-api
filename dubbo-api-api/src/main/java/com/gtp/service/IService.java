@@ -7,7 +7,7 @@ import com.gtp.dubbo.api.annotation.ApiService;
 import com.gtp.vo.AddressVO;
 import com.gtp.vo.UserInfoVO;
 
-@ApiService(value="test2",desc="dubbo服务")
+@ApiService(value="test1",desc="dubbo服务")
 public interface IService {
 	
 	@ApiMethod(value="001",desc="测试方法")
