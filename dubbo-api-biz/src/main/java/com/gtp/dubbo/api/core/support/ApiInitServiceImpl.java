@@ -1,4 +1,4 @@
-package com.gtp.dubbo.api.core;
+package com.gtp.dubbo.api.core.support;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.dubbo.config.ApplicationConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
@@ -16,7 +18,9 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.gtp.dubbo.api.annotation.ApiMethod;
 import com.gtp.dubbo.api.annotation.ApiService;
 import com.gtp.dubbo.api.common.AppConfig;
-import com.gtp.dubbo.api.listener.MyListener;
+import com.gtp.dubbo.api.core.ApiInitService;
+import com.gtp.dubbo.api.core.ApiManager;
+import com.gtp.dubbo.api.listener.AppInitListener;
 import com.gtp.dubbo.api.metadata.ApiApplicationInfo;
 import com.gtp.dubbo.api.metadata.ApiMethodInfo;
 import com.gtp.dubbo.api.params.ParameterBinder;
@@ -28,12 +32,19 @@ import com.gtp.dubbo.api.utils.Md5Utils;
  * 
  * @author gaotingping@cyberzone.cn
  */
+@Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ApiInit {
+public class ApiInitServiceImpl implements ApiInitService{
 
-	private static final Logger logger = LoggerFactory.getLogger(MyListener.class);
+	private static final Logger logger = LoggerFactory.getLogger(AppInitListener.class);
 
 	private static final Map<String, String> jarCache = new HashMap<>();
+	
+	@Autowired
+	private ParameterBinder parameterBinder;
+	
+	@Autowired
+	private AppConfig appConfig;
 
 	/**
 	 * 重启的时候，全部重新加载
@@ -42,7 +53,7 @@ public class ApiInit {
 	 * @param appConfig
 	 * @throws Exception
 	 */
-	public static void initAll(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+	public void initAll() throws Exception {
 
 		String jarPath = appConfig.getJarPath();
 
@@ -69,7 +80,7 @@ public class ApiInit {
 		for (String path : list) {
 			String v2 = Md5Utils.md5File(jarPath + path);
 			jarCache.put(jarPath + path, v2);
-			parseJar(parameterBinder, jarPath + path);
+			parseJar(jarPath + path);
 		}
 
 	}
@@ -81,7 +92,7 @@ public class ApiInit {
 	 * @param jarPath
 	 * @throws Exception
 	 */
-	private static void parseJar(ParameterBinder parameterBinder, String jarPath) throws Exception {
+	private void parseJar(String jarPath) throws Exception {
 
 		/**
 		 * 服务注册规划： 1.直接去zk注册中心中找(省事情,但是实现复杂，并且还需要jar信息，可能需要改装dubbo)
@@ -170,7 +181,7 @@ public class ApiInit {
 	 * @param appConfig
 	 * @throws Exception
 	 */
-	public static void refresh(ParameterBinder parameterBinder, String jarPath) throws Exception {
+	public void refresh(String jarPath) throws Exception {
 
 		// file is exits
 		File dir = new File(jarPath);
@@ -188,13 +199,13 @@ public class ApiInit {
 		if (jarCache.containsKey(jarPath)) {
 			String v1 = jarCache.get(jarPath);
 			if (v1 != null && !v1.equals(v2)) {
-				parseJar(parameterBinder, jarPath);
+				parseJar(jarPath);
 			} else {
 				logger.info("负略path(文件为空或未改变):" + jarPath);
 			}
 		} else {
 			jarCache.put(jarPath, v2);
-			parseJar(parameterBinder, jarPath);
+			parseJar(jarPath);
 		}
 	}
 
@@ -205,7 +216,7 @@ public class ApiInit {
 	 * @param appConfig
 	 * @throws Exception
 	 */
-	public static void refreshAll(ParameterBinder parameterBinder, AppConfig appConfig) throws Exception {
+	public void refreshAll() throws Exception {
 
 		String jarPath = appConfig.getJarPath();
 
@@ -240,13 +251,13 @@ public class ApiInit {
 			if (jarCache.containsKey(jarPath + path)) {
 				String v1 = jarCache.get(jarPath + path);
 				if (v1 != null && !v1.equals(v2)) {
-					parseJar(parameterBinder, jarPath + path);
+					parseJar(jarPath + path);
 				} else {
 					logger.info("忽略path(文件为空或未改变):" + path);
 				}
 			} else {
 				jarCache.put(jarPath + path, v2);
-				parseJar(parameterBinder, jarPath + path);
+				parseJar(jarPath + path);
 			}
 
 		}

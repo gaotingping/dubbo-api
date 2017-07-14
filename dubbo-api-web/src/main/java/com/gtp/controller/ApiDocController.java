@@ -13,13 +13,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.gtp.dubbo.api.common.AppConfig;
-import com.gtp.dubbo.api.core.ApiInit;
+import com.gtp.dubbo.api.core.ApiInitService;
 import com.gtp.dubbo.api.core.ApiManager;
 import com.gtp.dubbo.api.metadata.ApiMethodInfo;
 import com.gtp.dubbo.api.metadata.ApiParamInfo;
-import com.gtp.dubbo.api.params.ParameterBinder;
-import com.gtp.dubbo.api.params.support.DefaultParameterBinder;
 import com.gtp.dubbo.api.utils.ReflectUtils;
 
 /**
@@ -32,10 +29,7 @@ import com.gtp.dubbo.api.utils.ReflectUtils;
 public class ApiDocController {
 	
 	@Autowired
-	private AppConfig appConfig;
-	
-	@Autowired
-	private ParameterBinder parameterBinder;
+	private ApiInitService apiInitService;
 	
 	@RequestMapping(value = "/menu",produces = {"text/html; charset=UTF-8;charset=UTF-8" })
 	@ResponseBody
@@ -151,11 +145,8 @@ public class ApiDocController {
 	public String showAll() {
 		
 		try {
-			if (parameterBinder == null) {
-				parameterBinder = new DefaultParameterBinder();
-			}
 			//刷新
-			ApiInit.refreshAll(parameterBinder, appConfig);
+			apiInitService.refreshAll();
 			
 			//刷出
 			System.out.println(ApiManager.getPool());

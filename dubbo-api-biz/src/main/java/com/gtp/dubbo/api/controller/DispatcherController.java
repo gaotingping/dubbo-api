@@ -3,6 +3,8 @@ package com.gtp.dubbo.api.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,11 +16,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gtp.dubbo.api.executor.ServiceDispatcher;
+import com.gtp.dubbo.api.listener.AppInitListener;
 import com.gtp.dubbo.api.metadata.ApiRequestInfo;
 import com.gtp.dubbo.api.metadata.ApiResponseInfo;
 
 @Controller
 public class DispatcherController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AppInitListener.class);
 
 	@Autowired
 	private ServiceDispatcher dispatcher;/* 服务转发器 */
@@ -46,7 +51,7 @@ public class DispatcherController {
 						SerializerFeature.WriteNullBooleanAsFalse);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		}
 		
 		return null;
