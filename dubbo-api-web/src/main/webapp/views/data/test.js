@@ -1,46 +1,9 @@
 var zNodes = [ {
-	name : "服务模块1", //app
+	name : "服务模块1", // app
 	open : true,
-	children : [ {  //service
+	children : [ { // service
 		name : "接口名称1(类似于mvc的controller)",
-		children : [ { //method
-			name : "方法1"
-		}, {
-			name : "方法2"
-		}, {
-			name : "方法3"
-		}, {
-			name : "方法4"
-		} ]
-	}, {
-		name : "接口名称2(类似于mvc的controller)",
-		children : [ {
-			name : "方法1"
-		}, {
-			name : "方法2"
-		}, {
-			name : "方法3"
-		}, {
-			name : "方法4"
-		} ]
-	} ]
-}, {
-	name : "服务模块2",
-	open : true,
-	children : [ {
-		name : "接口名称1(类似于mvc的controller)",
-		children : [ {
-			name : "方法1"
-		}, {
-			name : "方法2"
-		}, {
-			name : "方法3"
-		}, {
-			name : "方法4"
-		} ]
-	}, {
-		name : "接口名称2(类似于mvc的controller)",
-		children : [ {
+		children : [ { // method
 			name : "方法1"
 		}, {
 			name : "方法2"
@@ -51,6 +14,19 @@ var zNodes = [ {
 		} ]
 	} ]
 } ];
+
+[ {
+	"open" : true,
+	"name" : "api",
+	"children" : [{
+		"name" : "test2",
+		"children" : [ {
+			"name" : "001"
+		}, {
+			"name" : "002"
+		} ]
+	} ]
+} ]
 
 var api_m = {
 	"id" : {

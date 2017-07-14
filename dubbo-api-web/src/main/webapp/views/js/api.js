@@ -1,10 +1,9 @@
 var setting = {
 	callback : {
 		beforeClick : function(treeId, treeNode) {
-			console.log(treeId);
-			console.log(treeNode);
-			$("#api_method").show();
-			$("#api_readme").hide();
+			if(treeNode.isM != null && treeNode.isM == true){
+				apiMethodInit(treeNode.app,treeNode.service,treeNode.name);
+			}
 		}
 	}
 };
@@ -15,13 +14,12 @@ $(document).ready(function() {
 	apiMenuInit();
 
 	// 具体指定方法
-	apiMethodInit();
-
+	//apiMethodInit();
 });
 
-function apiMethodInit() {
+function apiMethodInit(app,service,method) {
 
-	$.get("/doc/method", function(data) {
+	$.get("/doc/method?app="+app+"&service="+service+"&method="+method, function(data) {
 
 		// 方法头信息
 		var result = JSON.parse(data);
@@ -37,21 +35,23 @@ function apiMethodInit() {
 			dom : '#m_req'
 		};
 		var jf = new JsonFormater(options);
-		jf.doFormat(JSON.stringify(result.request));
+		jf.doFormat(result.request);
 
 		// 格式化-响应
 		var options2 = {
 			dom : '#m_resp'
 		};
 		var jf2 = new JsonFormater(options2);
-		jf2.doFormat(JSON.stringify(result.response));
+		jf2.doFormat(result.response);
 	});
 }
 
 function apiMenuInit() {
-	$.fn.zTree.init($("#apiTreeId"), setting, zNodes);
-	var treeObj = $.fn.zTree.getZTreeObj("apiTreeId");
-	treeObj.expandAll(true);
+	$.get("/doc/menu", function(data) {
+		$.fn.zTree.init($("#apiTreeId"), setting, JSON.parse(data));
+		var treeObj = $.fn.zTree.getZTreeObj("apiTreeId");
+		treeObj.expandAll(true);
+	});
 }
 
 /*
