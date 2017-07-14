@@ -12,6 +12,8 @@
 	<dubbo:protocol name="dubbo" port="20880"/>
 	
 	<dubbo:service interface="com.gtp.service.IService" ref="iService"/>
+	<dubbo:service interface="com.gtp.service.IService2" ref="iService2"/>
 	
 	<bean id="iService" class="com.gtp.service.impl.IServerImpl" />
+	<bean id="iService2" class="com.gtp.service.impl.IServerImpl2" />
 </beans>
