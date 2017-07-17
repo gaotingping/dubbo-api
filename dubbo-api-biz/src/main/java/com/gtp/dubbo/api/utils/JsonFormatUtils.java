@@ -1,18 +1,10 @@
 package com.gtp.dubbo.api.utils;
 
 /**
- * json格式化输出：方便开发测试
- * 
- * @author gaotingping
- *
- * 2016年7月11日 上午11:03:00
+ * json格式化输出
  */
 public class JsonFormatUtils {
 	
-
-	public static void printJson(String jsonStr){
-		System.out.println(formatJson(jsonStr));
-	}
    
 	public static String formatJson(String jsonStr) {
         if (null == jsonStr || "".equals(jsonStr)) return "";
