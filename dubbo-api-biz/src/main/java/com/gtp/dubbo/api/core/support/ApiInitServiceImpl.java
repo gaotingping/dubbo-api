@@ -18,8 +18,8 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.gtp.dubbo.api.annotation.ApiMethod;
 import com.gtp.dubbo.api.annotation.ApiService;
 import com.gtp.dubbo.api.common.AppConfig;
-import com.gtp.dubbo.api.core.ApiInitService;
-import com.gtp.dubbo.api.core.ApiManager;
+import com.gtp.dubbo.api.core.ApiJarService;
+import com.gtp.dubbo.api.core.ApiRegisterService;
 import com.gtp.dubbo.api.listener.AppInitListener;
 import com.gtp.dubbo.api.metadata.ApiApplicationInfo;
 import com.gtp.dubbo.api.metadata.ApiMethodInfo;
@@ -27,14 +27,9 @@ import com.gtp.dubbo.api.params.ParameterBinder;
 import com.gtp.dubbo.api.utils.ClassLoadUtils;
 import com.gtp.dubbo.api.utils.Md5Utils;
 
-/**
- * 读取配置文件获得jar 解析jar
- * 
- * @author gaotingping@cyberzone.cn
- */
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ApiInitServiceImpl implements ApiInitService{
+public class ApiInitServiceImpl implements ApiJarService{
 
 	private static final Logger logger = LoggerFactory.getLogger(AppInitListener.class);
 
@@ -45,14 +40,10 @@ public class ApiInitServiceImpl implements ApiInitService{
 	
 	@Autowired
 	private AppConfig appConfig;
+	
+	@Autowired
+	private ApiRegisterService registerService;
 
-	/**
-	 * 重启的时候，全部重新加载
-	 * 
-	 * @param parameterBinder
-	 * @param appConfig
-	 * @throws Exception
-	 */
 	public void initAll() throws Exception {
 
 		String jarPath = appConfig.getJarPath();
@@ -87,20 +78,9 @@ public class ApiInitServiceImpl implements ApiInitService{
 
 	/**
 	 * 加载单个jar
-	 * 
-	 * @param parameterBinder
-	 * @param jarPath
-	 * @throws Exception
 	 */
 	private void parseJar(String jarPath) throws Exception {
 
-		/**
-		 * 服务注册规划： 1.直接去zk注册中心中找(省事情,但是实现复杂，并且还需要jar信息，可能需要改装dubbo)
-		 * 2.简单点的是把jar打包给我，放到指定位置，在管理界面动态注册 register需要的消息 1.application应用名
-		 * 2.zk注册中心，多个用“,”隔开
-		 * 3.jar名称(都放jar里面/META-INF/publish.properties,总线有个默认的)
-		 * 4.负责人信息，以及更详细的dubbo属性等
-		 */
 		logger.info("===开始注册dubbo服务===");
 		logger.info("jarPath=" + jarPath);
 
@@ -119,8 +99,10 @@ public class ApiInitServiceImpl implements ApiInitService{
 		registry.setAddress(app.getAddress());
 
 		/**
-		 * 注意：ReferenceConfig为重对象，内部封装了与注册中心的连接 以及与服务提供方的连接引用远程服务,此实例很重，封装了与注册中
-		 * 心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接 泄漏,每个接口一个对象reference对象
+		 * 注意：ReferenceConfig为重对象，内部封装了与注册中心的连接
+		 * 以及与服务提供方的连接引用远程服务,此实例很重，封装了与注册中
+		 * 心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接 
+		 * 泄漏,每个接口一个对象reference对象
 		 */
 		// 每个服务一个reference
 		List<Class<?>> list = app.getServices();
@@ -134,8 +116,7 @@ public class ApiInitServiceImpl implements ApiInitService{
 
 			ReferenceConfig reference = new ReferenceConfig();
 			reference.setApplication(application);
-			reference.setRegistry(
-					registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
+			reference.setRegistry(registry); /* 多个注册中心可以用setRegistries(),其内部也是这样转换的 */
 			reference.setInterface(c);
 			reference.setCheck(false);/* #bug fix 不检测服务提供者，防止个别服务错误导致api启动不了 */
 
@@ -151,8 +132,7 @@ public class ApiInitServiceImpl implements ApiInitService{
 
 			Map<String, ApiMethodInfo> methods = new HashMap<>();
 
-			for (Method method : c
-					.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
+			for (Method method : c.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
 				ApiMethod serviceCode = method.getAnnotation(ApiMethod.class);
 				if (serviceCode != null) {
 					ApiMethodInfo m = new ApiMethodInfo();
@@ -169,53 +149,40 @@ public class ApiInitServiceImpl implements ApiInitService{
 			services.put(apiService.value(), methods);
 		}
 
-		ApiManager.register(app.getName(), services);
+		registerService.register(app.getName(), services);
 
 		logger.info("===结束注册dubbo服务===");
 	}
 
-	/**
-	 * 刷新单个jar
-	 * 
-	 * @param parameterBinder
-	 * @param appConfig
-	 * @throws Exception
-	 */
 	public void refresh(String jarPath) throws Exception {
 
 		// file is exits
-		File dir = new File(jarPath);
-		if (!dir.exists()) {
+		File f = new File(jarPath);
+		if (!f.exists()) {
 			logger.error("Jar path is not exits:" + jarPath);
 			return;
 		}
 
-		String v2 = Md5Utils.md5File(jarPath);
-		if (v2 == null) {
-			logger.info("负略path(文件为空或未改变):" + jarPath);
+		String md5 = Md5Utils.md5File(jarPath);
+		if (md5 == null) {
+			logger.info("忽略path(文件为空或未改变):" + jarPath);
 			return;
 		}
 
 		if (jarCache.containsKey(jarPath)) {
-			String v1 = jarCache.get(jarPath);
-			if (v1 != null && !v1.equals(v2)) {
+			String v = jarCache.get(jarPath);
+			if (!v.equals(md5)) {
+				//文件更新了,重新加载
 				parseJar(jarPath);
 			} else {
-				logger.info("负略path(文件为空或未改变):" + jarPath);
+				logger.info("忽略path(文件为空或未改变):" + jarPath);
 			}
 		} else {
-			jarCache.put(jarPath, v2);
+			jarCache.put(jarPath, md5);
 			parseJar(jarPath);
 		}
 	}
 
-	/**
-	 * 刷新jar工作区，以文件的md5值为区分是否更新
-	 * 
-	 * @param parameterBinder
-	 * @param appConfig
-	 * @throws Exception
-	 */
 	public void refreshAll() throws Exception {
 
 		String jarPath = appConfig.getJarPath();
@@ -242,21 +209,21 @@ public class ApiInitServiceImpl implements ApiInitService{
 
 		for (String path : list) {
 
-			String v2 = Md5Utils.md5File(jarPath + path);
-			if (v2 == null) {
+			String md5 = Md5Utils.md5File(jarPath + path);
+			if (md5 == null) {
 				logger.info("忽略path(文件为空或未改变):" + path);
 				continue;
 			}
 
 			if (jarCache.containsKey(jarPath + path)) {
 				String v1 = jarCache.get(jarPath + path);
-				if (v1 != null && !v1.equals(v2)) {
+				if (!v1.equals(md5)) {
 					parseJar(jarPath + path);
 				} else {
 					logger.info("忽略path(文件为空或未改变):" + path);
 				}
 			} else {
-				jarCache.put(jarPath + path, v2);
+				jarCache.put(jarPath + path, md5);
 				parseJar(jarPath + path);
 			}
 

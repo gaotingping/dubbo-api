@@ -13,8 +13,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.gtp.dubbo.api.core.ApiInitService;
-import com.gtp.dubbo.api.core.ApiManager;
+import com.gtp.dubbo.api.core.ApiJarService;
+import com.gtp.dubbo.api.core.ApiRegisterService;
 import com.gtp.dubbo.api.metadata.ApiMethodInfo;
 import com.gtp.dubbo.api.metadata.ApiParamInfo;
 import com.gtp.dubbo.api.utils.ReflectUtils;
@@ -29,7 +29,10 @@ import com.gtp.dubbo.api.utils.ReflectUtils;
 public class ApiDocController {
 	
 	@Autowired
-	private ApiInitService apiInitService;
+	private ApiJarService apiJarService;
+	
+	@Autowired
+	private ApiRegisterService  apiRegisterService;
 	
 	@RequestMapping(value = "/menu",produces = {"text/html; charset=UTF-8;charset=UTF-8" })
 	@ResponseBody
@@ -37,7 +40,7 @@ public class ApiDocController {
 		
 		JSONArray data=new JSONArray();
 		
-		Map<String, Map<String, Map<String, ApiMethodInfo>>> map = ApiManager.getPool();
+		Map<String, Map<String, Map<String, ApiMethodInfo>>> map = apiRegisterService.getAll();
 		Iterator<String> it = map.keySet().iterator();
 		while(it.hasNext()){
 			
@@ -88,7 +91,7 @@ public class ApiDocController {
 	@ResponseBody
 	public String methodInfo(String app,String service,String method) {
 		
-		ApiMethodInfo m = ApiManager.get(app, service, method);
+		ApiMethodInfo m = apiRegisterService.get(app, service, method);
 				
 		JSONObject result=new JSONObject();
 		
@@ -146,10 +149,10 @@ public class ApiDocController {
 		
 		try {
 			//刷新
-			apiInitService.refreshAll();
+			apiJarService.refreshAll();
 			
 			//刷出
-			System.out.println(ApiManager.getPool());
+			System.out.println(apiRegisterService.getAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

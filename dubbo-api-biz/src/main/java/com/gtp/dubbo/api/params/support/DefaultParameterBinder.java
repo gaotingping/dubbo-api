@@ -11,12 +11,7 @@ import com.gtp.dubbo.api.metadata.ApiParamInfo;
 import com.gtp.dubbo.api.params.ParameterBinder;
 import com.gtp.dubbo.api.utils.ReflectUtils;
 
-/**
- * 默认参数解析器
- * 
- * @author gaotingping@cyberzone.cn
- *
- */
+
 @Service
 public class DefaultParameterBinder implements ParameterBinder {
 
@@ -28,20 +23,20 @@ public class DefaultParameterBinder implements ParameterBinder {
 		return ReflectUtils.getReturnInfo(method);
 	}
 
-	public Object[] getParamValues(Method method,List<ApiParamInfo> paramNames,
+	public Object[] getParamValues(List<ApiParamInfo> paramNames,
 			JSONObject args) {
 		
 		int size=paramNames.size();
 		Object [] paramValues = new Object[size];
 		for (int i = 0; i < size; i++) {
 			ApiParamInfo bp = paramNames.get(i);
-			paramValues[i] = getInptVal(method,args,bp);
+			paramValues[i] = getInptVal(args,bp);
 		}
 		
 		return paramValues;
 	}
 
-	private Object getInptVal(Method method,JSONObject args, ApiParamInfo p) {
+	private Object getInptVal(JSONObject args, ApiParamInfo p) {
 		if(p.getIsList()){
 			String v = args.getString(p.getApiParam().value());
 			return JSON.parseArray(v,p.getType());

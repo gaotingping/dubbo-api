@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.gtp.dubbo.api.core.ApiInitService;
+import com.gtp.dubbo.api.core.ApiJarService;
 
 /**
  * 负责日期得初始化
@@ -19,7 +19,7 @@ public class AppInitListener implements ApplicationListener<ApplicationContextEv
 	private static final Logger logger = LoggerFactory.getLogger(AppInitListener.class);
 
 	@Autowired
-	private ApiInitService apiInitService;
+	private ApiJarService apiInitService;
 
 	@Override
 	public void onApplicationEvent(ApplicationContextEvent event) {

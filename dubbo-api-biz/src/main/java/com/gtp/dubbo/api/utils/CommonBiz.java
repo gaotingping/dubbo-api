@@ -11,4 +11,19 @@ public class CommonBiz {
 		return false;
 	}
 
+	public static boolean isEmpty(String ... ps) {
+		
+		if(ps==null){
+			return true;
+		}
+		
+		for(String p:ps){
+			if(isEmpty(p)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 }

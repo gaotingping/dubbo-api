@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gtp.dubbo.api.metadata.ApiParamInfo;
 
 /**
- * 参数绑定
+ * 参数解析与绑定
  * 
  * @author gaotingping@cyberzone.cn
  */
@@ -15,20 +15,29 @@ public interface ParameterBinder {
 
      
 	/**
-	 * 获得参数上的所有注解
+	 * 获得“输入”参数
+	 * 
+	 * @param method
+	 * @return
 	 */
 	public List<ApiParamInfo> getInParams(Method method);
 	
+	
 	/**
-	 * 获得返回值
+	 * 获得“输出”参数
 	 * 
 	 * @param method
 	 * @return
 	 */
 	public ApiParamInfo getOutParams(Method method);
 
+	
 	/**
-	 * 根据参数名称获得参数对应的输入值
+	 * 根据实参和形参获得输入值
+	 * 
+	 * @param paramNames
+	 * @param args
+	 * @return
 	 */
-	public Object[] getParamValues(Method method,List<ApiParamInfo> paramNames,JSONObject args);
+	public Object[] getParamValues(List<ApiParamInfo> paramNames,JSONObject args);
 }
