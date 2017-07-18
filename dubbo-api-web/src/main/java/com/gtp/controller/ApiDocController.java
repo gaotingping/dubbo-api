@@ -34,7 +34,8 @@ public class ApiDocController {
 	@Autowired
 	private ApiRegisterService  apiRegisterService;
 	
-	@RequestMapping(value = "/menu",produces = {"text/html; charset=UTF-8;charset=UTF-8" })
+	//左侧菜单
+	@RequestMapping(value = "/menu",produces = {"text/html; charset=UTF-8;" })
 	@ResponseBody
 	public String menuInfo() {
 		
@@ -87,7 +88,8 @@ public class ApiDocController {
 		return data.toJSONString();
 	}
 	
-	@RequestMapping(value = "/method",produces = {"text/html; charset=UTF-8;charset=UTF-8" })
+	//方法详情
+	@RequestMapping(value = "/method",produces = {"text/html; charset=UTF-8;" })
 	@ResponseBody
 	public String methodInfo(String app,String service,String method) {
 		
@@ -105,7 +107,7 @@ public class ApiDocController {
 		return JSON.toJSONString(result,SerializerFeature.DisableCircularReferenceDetect);
 	}
 	
-	public String getInput(List<ApiParamInfo> params){
+	private String getInput(List<ApiParamInfo> params){
 		
 		JSONObject args = new JSONObject();
 		if(params!=null){
@@ -130,7 +132,7 @@ public class ApiDocController {
 		return args.toJSONString();
 	}
 	
-	public String getOutput(ApiParamInfo returnParams){
+	private String getOutput(ApiParamInfo returnParams){
 
 		if(returnParams.getIsList()){
 			JSONObject returnJson = ReflectUtils.allFields(returnParams.getType());
@@ -143,16 +145,46 @@ public class ApiDocController {
 		}
 	}
 	
-	@RequestMapping(value = "/all",produces = {"text/html; charset=UTF-8;charset=UTF-8" })
+	//应用管理
+	@RequestMapping(value = "/app_list",produces = {"text/html; charset=UTF-8;" })
 	@ResponseBody
-	public String showAll() {
+	public String appList() {
+		
+		try {
+			return JSON.toJSONString(apiJarService.getAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "OK";
+	}
+	
+	//刷新所有
+	@RequestMapping(value = "/refresh_all",produces = {"text/html; charset=UTF-8;" })
+	@ResponseBody
+	public String refreshAll() {
 		
 		try {
 			//刷新
 			apiJarService.refreshAll();
 			
-			//刷出
-			System.out.println(apiRegisterService.getAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "OK";
+	}
+	
+	//刷新单个
+	@RequestMapping(value = "/refresh",produces = {"text/html; charset=UTF-8;" })
+	@ResponseBody
+	public String refresh(String jarName) {
+		
+		try {
+			
+			//刷新
+			apiJarService.refresh(jarName);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

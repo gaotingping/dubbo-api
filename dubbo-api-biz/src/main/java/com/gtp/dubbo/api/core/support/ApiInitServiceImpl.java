@@ -3,6 +3,7 @@ package com.gtp.dubbo.api.core.support;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +69,10 @@ public class ApiInitServiceImpl implements ApiJarService{
 			return;
 		}
 
-		for (String path : list) {
-			String v2 = Md5Utils.md5File(jarPath + path);
-			jarCache.put(jarPath + path, v2);
-			parseJar(jarPath + path);
+		for (String name : list) {
+			String v2 = Md5Utils.md5File(jarPath + name);
+			jarCache.put(name, v2);
+			parseJar(jarPath + name);
 		}
 
 	}
@@ -154,9 +155,10 @@ public class ApiInitServiceImpl implements ApiJarService{
 		logger.info("===结束注册dubbo服务===");
 	}
 
-	public void refresh(String jarPath) throws Exception {
+	public void refresh(String jarName) throws Exception {
 
 		// file is exits
+		String jarPath=appConfig.getJarPath()+jarName;
 		File f = new File(jarPath);
 		if (!f.exists()) {
 			logger.error("Jar path is not exits:" + jarPath);
@@ -169,8 +171,8 @@ public class ApiInitServiceImpl implements ApiJarService{
 			return;
 		}
 
-		if (jarCache.containsKey(jarPath)) {
-			String v = jarCache.get(jarPath);
+		if (jarCache.containsKey(jarName)) {
+			String v = jarCache.get(jarName);
 			if (!v.equals(md5)) {
 				//文件更新了,重新加载
 				parseJar(jarPath);
@@ -178,7 +180,7 @@ public class ApiInitServiceImpl implements ApiJarService{
 				logger.info("忽略path(文件为空或未改变):" + jarPath);
 			}
 		} else {
-			jarCache.put(jarPath, md5);
+			jarCache.put(jarName, md5);
 			parseJar(jarPath);
 		}
 	}
@@ -207,26 +209,31 @@ public class ApiInitServiceImpl implements ApiJarService{
 			return;
 		}
 
-		for (String path : list) {
+		for (String name : list) {
 
-			String md5 = Md5Utils.md5File(jarPath + path);
+			String md5 = Md5Utils.md5File(jarPath + name);
 			if (md5 == null) {
-				logger.info("忽略path(文件为空或未改变):" + path);
+				logger.info("忽略path(文件为空或未改变):" + name);
 				continue;
 			}
 
-			if (jarCache.containsKey(jarPath + path)) {
-				String v1 = jarCache.get(jarPath + path);
+			if (jarCache.containsKey(name)) {
+				String v1 = jarCache.get(name);
 				if (!v1.equals(md5)) {
-					parseJar(jarPath + path);
+					parseJar(jarPath + name);
 				} else {
-					logger.info("忽略path(文件为空或未改变):" + path);
+					logger.info("忽略path(文件为空或未改变):" + name);
 				}
 			} else {
-				jarCache.put(jarPath + path, md5);
-				parseJar(jarPath + path);
+				jarCache.put(name, md5);
+				parseJar(jarPath + name);
 			}
 
 		}
+	}
+	
+	@Override
+	public List<String> getAll() {
+		return new ArrayList<>(jarCache.keySet());
 	}
 }

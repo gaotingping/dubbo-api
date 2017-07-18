@@ -1,5 +1,7 @@
 package com.gtp.dubbo.api.core;
 
+import java.util.List;
+
 /**
  * jar加载,解析与刷新等
  * 
@@ -18,10 +20,17 @@ public interface ApiJarService {
 	 * 
 	 * @param jarPath
 	 */
-	public void refresh(String jarPath) throws Exception;
+	public void refresh(String jarName) throws Exception;
 
 	/**
 	 * 刷新jar工作区(所有jar)，以文件的md5值为区分是否更新
 	 */
 	public void refreshAll() throws Exception;
+	
+	/**
+	 * 获得所有jar
+	 * 
+	 * @return
+	 */
+	public List<String> getAll();
 }
