@@ -28,7 +28,7 @@ public class DispatcherController {
 	@Autowired
 	private ServiceDispatcher dispatcher;/* 服务转发器 */
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/services",produces = "text/html; charset=utf-8")
+	@RequestMapping(method = RequestMethod.POST, value = "/api",produces = "text/html; charset=utf-8")
 	@ResponseBody
 	public String doService(@RequestBody String body,HttpServletRequest request,HttpServletResponse response) {
 		
