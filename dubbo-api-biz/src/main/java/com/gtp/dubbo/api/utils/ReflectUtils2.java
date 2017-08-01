@@ -20,21 +20,21 @@ import com.gtp.dubbo.api.metadata.ApiParamInfo;
  * 
  * @author gaotingping@cyberzone.cn
  */
-public class ReflectUtils {
+public class ReflectUtils2 {
 
 	public static JSONObject allFields(Class<?> c) {
 		JSONObject result = new JSONObject();
 		if (isBaseType(c)) {
 			ApiDescribe desc = c.getAnnotation(ApiDescribe.class);
-//			JSONObject tmp1 = new JSONObject();
-//			tmp1.put("type", c.getSimpleName());
-//			tmp1.put("fields", null);
-//			if (desc != null) {
-//				tmp1.put("desc", desc.value());
-//			} else {
-//				tmp1.put("desc", "");
-//			}
-			result.put(c.getSimpleName(), desc==null?"":desc.value());
+			JSONObject tmp1 = new JSONObject();
+			tmp1.put("type", c.getSimpleName());
+			tmp1.put("fields", null);
+			if (desc != null) {
+				tmp1.put("desc", desc.value());
+			} else {
+				tmp1.put("desc", "");
+			}
+			result.put(c.getSimpleName(), tmp1);
 		} else {
 			do {
 				Field[] fs = c.getDeclaredFields();
@@ -42,56 +42,51 @@ public class ReflectUtils {
 					HashMap<String, String> circuleRef = new HashMap<String, String>();
 					circuleRef.put(c.getName(), null);
 					ApiDescribe desc = f.getAnnotation(ApiDescribe.class);
-					
-					/**
-					 *#bug fix
-					 *实际工作中，有些字段是不需要显示的
-					 */
-					if (desc == null) {
+					if (desc == null) {/* 忽略未注解字段 */
 						continue;
 					}
 					if (isBaseType(f.getType())) { /* 基本类型 */
 						result.put(f.getName(), desc.value());
-						//JSONObject tmp2 = new JSONObject();
-						//tmp2.put("type", f.getType().getSimpleName());
-						//tmp2.put("fields", null);
-						//tmp2.put("desc", desc.value());
-						result.put(f.getName(), desc.value());
+						JSONObject tmp2 = new JSONObject();
+						tmp2.put("type", f.getType().getSimpleName());
+						tmp2.put("fields", null);
+						tmp2.put("desc", desc.value());
+						result.put(f.getName(), tmp2);
 					} else if (f.getType() == List.class) {/* list集合 */
 						Type type = f.getGenericType();
 						if (type instanceof ParameterizedType) {
 							Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();
 							Class<?> tmpC = (Class<?>) actualTypes[0];
 							if (circuleRef.containsKey(tmpC.getName())) { /* 循环引用 */
-								//JSONObject tmp3 = new JSONObject();
-								//tmp3.put("type", f.getType().getSimpleName());
-								//tmp3.put("fields", "$ref_" + tmpC.getName());
-								//tmp3.put("desc", desc.value());
-								result.put(f.getName(), desc.value()+"($ref_"+tmpC.getSimpleName()+")");
+								JSONObject tmp3 = new JSONObject();
+								tmp3.put("type", f.getType().getSimpleName());
+								tmp3.put("fields", "$ref_" + tmpC.getName());
+								tmp3.put("desc", desc.value());
+								result.put(f.getName(), tmp3);
 							} else {
 								JSONArray data = new JSONArray();
 								data.add(innerAllFields(tmpC, circuleRef));
-								//JSONObject tmp4 = new JSONObject();
-								//tmp4.put("type", f.getType().getSimpleName());
-								//tmp4.put("fields", data);
-								//tmp4.put("desc", desc.value());
-								result.put(f.getName(), data);
+								JSONObject tmp4 = new JSONObject();
+								tmp4.put("type", f.getType().getSimpleName());
+								tmp4.put("fields", data);
+								tmp4.put("desc", desc.value());
+								result.put(f.getName(), tmp4);
 								circuleRef.remove(tmpC.getName());/* 分支迭代完删除 */
 							}
 						}
 					} else { /* 自定义bean */
 						if (circuleRef.containsKey(f.getType().getName())) { /* 循环引用 */
-							//JSONObject tmp5 = new JSONObject();
-							//tmp5.put("type", f.getType().getSimpleName());
-							//tmp5.put("fields", "$ref_" + f.getType().getName());
-							//tmp5.put("desc", desc.value());
-							result.put(f.getName(), desc.value()+"($ref_" + f.getType().getSimpleName()+")");
+							JSONObject tmp5 = new JSONObject();
+							tmp5.put("type", f.getType().getSimpleName());
+							tmp5.put("fields", "$ref_" + f.getType().getName());
+							tmp5.put("desc", desc.value());
+							result.put(f.getName(), tmp5);
 						} else {
-							//JSONObject tmp6 = new JSONObject();
-							//tmp6.put("type", f.getType().getSimpleName());
-							//tmp6.put("fields", innerAllFields(f.getType(), circuleRef));
-							//tmp6.put("desc", desc.value());
-							result.put(f.getName(), innerAllFields(f.getType(), circuleRef));
+							JSONObject tmp6 = new JSONObject();
+							tmp6.put("type", f.getType().getSimpleName());
+							tmp6.put("fields", innerAllFields(f.getType(), circuleRef));
+							tmp6.put("desc", desc.value());
+							result.put(f.getName(), tmp6);
 							circuleRef.remove(f.getType().getName());/* 分支迭代完删除 */
 						}
 					}
@@ -114,11 +109,11 @@ public class ReflectUtils {
 					continue;
 				}
 				if (isBaseType(f.getType())) { /* 基本类型 */
-					//JSONObject tmp1 = new JSONObject();
-					//tmp1.put("type", f.getType().getSimpleName());
-					//tmp1.put("fields", null);
-					//tmp1.put("desc", desc.value());
-					result.put(f.getName(), desc.value());
+					JSONObject tmp1 = new JSONObject();
+					tmp1.put("type", f.getType().getSimpleName());
+					tmp1.put("fields", null);
+					tmp1.put("desc", desc.value());
+					result.put(f.getName(), tmp1);
 				} else if (f.getType() == List.class) {/* list集合 */
 					Type type = f.getGenericType();
 					if (type instanceof ParameterizedType) {
@@ -126,26 +121,26 @@ public class ReflectUtils {
 						Class<?> tmpC = (Class<?>) actualTypes[0];
 						JSONArray data = new JSONArray();
 						data.add(innerAllFields(tmpC, circuleRef));
-						//JSONObject tmp2 = new JSONObject();
-						//tmp2.put("type", f.getType().getSimpleName());
-						//tmp2.put("fields", data);
-						//tmp2.put("desc", desc.value());
-						result.put(f.getName(), data);
+						JSONObject tmp2 = new JSONObject();
+						tmp2.put("type", f.getType().getSimpleName());
+						tmp2.put("fields", data);
+						tmp2.put("desc", desc.value());
+						result.put(f.getName(), tmp2);
 						circuleRef.remove(tmpC.getName());/* 分支迭代完删除 */
 					}
 				} else { /* 自定义bean */
 					if (circuleRef.containsKey(f.getType().getName())) { /* 循环引用 */
-						//JSONObject tmp3 = new JSONObject();
-						//tmp3.put("type", f.getType().getSimpleName());
-						//tmp3.put("fields", "$ref_" + f.getType().getName());
-						//tmp3.put("desc", desc.value());
-						result.put(f.getName(), desc.value()+"($ref_" + f.getType().getSimpleName()+")");
+						JSONObject tmp3 = new JSONObject();
+						tmp3.put("type", f.getType().getSimpleName());
+						tmp3.put("fields", "$ref_" + f.getType().getName());
+						tmp3.put("desc", desc.value());
+						result.put(f.getName(), tmp3);
 					} else {
-						//JSONObject tmp4 = new JSONObject();
-						//tmp4.put("type", f.getType().getSimpleName());
-						//tmp4.put("fields", innerAllFields(f.getType(), circuleRef));
-						//tmp4.put("desc", desc.value());
-						result.put(f.getName(), innerAllFields(f.getType(), circuleRef));
+						JSONObject tmp4 = new JSONObject();
+						tmp4.put("type", f.getType().getSimpleName());
+						tmp4.put("fields", innerAllFields(f.getType(), circuleRef));
+						tmp4.put("desc", desc.value());
+						result.put(f.getName(), tmp4);
 					}
 					circuleRef.remove(f.getType().getName());/* 分支迭代完删除 */
 				}

@@ -57,8 +57,7 @@ public class AutoBuildDoc {
 					ApiMethod apiMethod = tm.getAnnotation(ApiMethod.class);
 					if (apiMethod != null) {
 
-						doc.add(new Paragraph((i + 1) + "." + (j + 1) + " " + apiMethod.desc(),
-								RtfParagraphStyle.STYLE_HEADING_2));
+						doc.add(new Paragraph((i + 1) + "." + (j + 1) + " " + apiMethod.desc(),RtfParagraphStyle.STYLE_HEADING_2));
 						doc.add(new Paragraph(""));
 
 						Table table = new Table(2);
@@ -84,10 +83,10 @@ public class AutoBuildDoc {
 										tmpData.add(ReflectUtils.allFields(p3.getType()));
 										args.put(p3.getApiParam().value(),tmpData);
 									}else if(ReflectUtils.isBaseType(p3.getType())){
-										JSONObject tmpData=new JSONObject();
-										tmpData.put("type", p3.getType().getSimpleName());
-										tmpData.put("desc", p3.getApiParam().desc());
-										args.put(p3.getApiParam().value(),tmpData);
+										//JSONObject tmpData=new JSONObject();
+										//tmpData.put("type", p3.getType().getSimpleName());
+										//tmpData.put("desc", p3.getApiParam().desc());
+										args.put(p3.getApiParam().value(),p3.getApiParam().desc());
 									}else{
 										args.put(p3.getApiParam().value(), ReflectUtils.allFields(p3.getType()));
 									}
