@@ -1,0 +1,4 @@
+#各jar 配置规范
+name=api
+protocol=zookeeper
+address=192.168.8.37:2181

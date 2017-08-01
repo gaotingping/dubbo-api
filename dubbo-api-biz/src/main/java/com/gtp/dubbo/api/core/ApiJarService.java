@@ -33,4 +33,12 @@ public interface ApiJarService {
 	 * @return
 	 */
 	public List<String> getAll();
+	
+	/**
+	 * 检查jar是否正确
+	 * 1.api配置文件是否合理(名称是否重复)
+	 * 2.文件是否为空
+	 * 3.文件最大限制
+	 */
+	public boolean chechOK(String jarName) throws Exception;
 }

@@ -236,4 +236,9 @@ public class ApiInitServiceImpl implements ApiJarService{
 	public List<String> getAll() {
 		return new ArrayList<>(jarCache.keySet());
 	}
+
+	@Override
+	public boolean chechOK(String jarName) throws Exception {
+		return true;
+	}
 }
