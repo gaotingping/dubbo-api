@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import com.gtp.dubbo.api.annotation.ApiDescribe;
+import com.gtp.dubbo.api.annotation.ApiMethod;
 
 /**
  * API方法抽象
@@ -14,24 +15,14 @@ import com.gtp.dubbo.api.annotation.ApiDescribe;
 public class ApiMethodInfo {
 
 	private Method method;/*方法*/
-	
-	private String methodDesc;/*方法描述*/
-	
-	private String methodCode;/*方法编码,唯一标识*/
-	
+
 	private Object instance;/*实例*/
+	
+	private ApiMethod annotate;/*方法注解*/
 	
 	private  List<ApiParamInfo> inParams;/*参数列表与类型*/
 	
 	private ApiParamInfo outParams;/*返回值*/
-	
-	public String getMethodCode() {
-		return methodCode;
-	}
-
-	public void setMethodCode(String methodCode) {
-		this.methodCode = methodCode;
-	}
 
 	public Object getInstance() {
 		return instance;
@@ -48,15 +39,7 @@ public class ApiMethodInfo {
 	public void setMethod(Method method) {
 		this.method = method;
 	}
-
-	public String getMethodDesc() {
-		return methodDesc;
-	}
-
-	public void setMethodDesc(String methodDesc) {
-		this.methodDesc = methodDesc;
-	}
-
+	
 	public List<ApiParamInfo> getInParams() {
 		return inParams;
 	}
@@ -73,9 +56,11 @@ public class ApiMethodInfo {
 		this.outParams = outParams;
 	}
 
-	@Override
-	public String toString() {
-		return "[method=" + method + ", methodDesc=" + methodDesc + ", methodCode=" + methodCode
-				+ ", inParams=" + inParams + ", outParams=" + outParams + "]";
+	public ApiMethod getAnnotate() {
+		return annotate;
+	}
+
+	public void setAnnotate(ApiMethod annotate) {
+		this.annotate = annotate;
 	}
 }

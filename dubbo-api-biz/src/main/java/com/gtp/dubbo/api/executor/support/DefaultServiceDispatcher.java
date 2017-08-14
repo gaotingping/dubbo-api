@@ -74,9 +74,9 @@ public class DefaultServiceDispatcher implements ServiceDispatcher {
 			if (args == null || args.isEmpty()) {
 				return ApiResponseInfo.failure(ApiErrorCode.PARAM_ERROR);
 			}
-
+			
 			// 跳过参数绑定
-			ApiMethod apiMethod = m.getMethod().getAnnotation(ApiMethod.class);
+			ApiMethod apiMethod = m.getAnnotate();
 			if (apiMethod.skipBP()) {
 				return doExecute(m.getMethod(), m.getInstance(), new Object[] { args });
 			}

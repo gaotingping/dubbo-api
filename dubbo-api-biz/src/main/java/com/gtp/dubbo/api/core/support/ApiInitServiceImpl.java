@@ -134,16 +134,15 @@ public class ApiInitServiceImpl implements ApiJarService{
 			Map<String, ApiMethodInfo> methods = new HashMap<>();
 
 			for (Method method : c.getDeclaredMethods()) {/* DeclaredMethod所有的，不含继承,包括私有的 */
-				ApiMethod serviceCode = method.getAnnotation(ApiMethod.class);
-				if (serviceCode != null) {
+				ApiMethod annotate = method.getAnnotation(ApiMethod.class);
+				if (annotate != null) {
 					ApiMethodInfo m = new ApiMethodInfo();
 					m.setInstance(instance); // 全局缓存
 					m.setMethod(method);
-					m.setMethodCode(serviceCode.value());
-					m.setMethodDesc(serviceCode.desc());
+					m.setAnnotate(annotate);
 					m.setInParams(parameterBinder.getInParams(method));
 					m.setOutParams(parameterBinder.getOutParams(method));
-					methods.put(serviceCode.value(), m);
+					methods.put(annotate.value(), m);
 				}
 			}
 
