@@ -118,10 +118,7 @@ public class ApiDocController {
 						tmpData.add(ReflectUtils.allFields(p3.getType()));
 						args.put(p3.getApiParam().value(),tmpData);
 					}else if(ReflectUtils.isBaseType(p3.getType())){
-						JSONObject tmpData=new JSONObject();
-						tmpData.put("type", p3.getType().getSimpleName());
-						tmpData.put("desc", p3.getApiParam().desc());
-						args.put(p3.getApiParam().value(),tmpData);
+						args.put(p3.getApiParam().value(),p3.getApiParam().desc());
 					}else{
 						args.put(p3.getApiParam().value(), ReflectUtils.allFields(p3.getType()));
 					}
