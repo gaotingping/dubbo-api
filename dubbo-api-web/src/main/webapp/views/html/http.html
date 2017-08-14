@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/http.css"/>
+</head>
+<body>
+<script type="text/javascript" src="../js/http.js"></script>
+<script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../jsonFormat/js/jsonFormater.js" type="text/javascript"></script>
+<div class="_content">
+<table>
+ 	<tr id="tr1">
+      <td class="td1">http(post):</td>
+      <td class="td2">
+      		<input name="http" id="http" type="text" value="http://192.168.8.37:8081/bus/services"/>
+      		<a href="javaScript:void(0)" onclick="test()">测试</a>
+      </td>
+   </tr>
+   <tr id="tr2">
+      <td class="td1">args:</td>
+      <td class="td2"><textarea name="args" id="args">{"args":{"userName":"医师_0100_0","password":"e10adc3949ba59abbe56e057f20f883e"},"serviceModule":"360DEService","serviceNumber":"login","TerminalType":"A","token":"-1"}</textarea></td>
+   </tr>
+   <tr id="tr3">
+      <td class="td1">response:</td>
+      <td class="td2"><div id="show"></div></td>
+   </tr>
+</table>
+</div>
+</body>
+</html>
